@@ -1,13 +1,9 @@
 package com.example.logistics.dto.request;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-@Setter
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+import lombok.Data;
+
+@Data
 public class AuthRequest {
-    String email;
-    String password;
+    private String email;
+    private String password;
 }
