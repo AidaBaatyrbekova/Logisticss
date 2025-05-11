@@ -18,16 +18,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.stereotype.Component;
-
-@Component
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
-    private final JwtFilter jwtFilter;
-    private final UserRepository userRepository;
+    private JwtFilter jwtFilter;
+    private UserRepository userRepository;
 
     public  UserDetailsService userDetailsService (){
         return phoneNumber -> (UserDetails) userRepository.findUserByPhoneNumber(phoneNumber).orElseThrow(

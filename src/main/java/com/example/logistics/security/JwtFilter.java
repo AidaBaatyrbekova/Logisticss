@@ -2,8 +2,6 @@ package com.example.logistics.security;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.example.logistics.entity.User;
-import com.example.logistics.security.JwtService;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,26 +19,26 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
-    private final JwtService jwtService;
+    private final JwtService jwtService;  // JwtService объектин инъекция кылуу
 
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request,
                                     @NotNull HttpServletResponse response,
-                                    @NotNull FilterChain filterChain) throws ServletException, IOException, java.io.IOException {
-        String header = request.getHeader("Authorization");
-        if (header != null && header.startsWith("Bearer ")) {
-            String token = header.substring(7);
+                                    @NotNull FilterChain filterChain) throws ServletException, IOException {
+        String header = request.getHeader("Authorization");  // Authorization башталышындагы хедерди алуу
+        if (header != null && header.startsWith("Bearer ")) {  // Токен текшерүү
+            String token = header.substring(7);  // Токенди алып алуу (Bearer токен)
             try {
-                User user = jwtService.verifyToken(token);
+                User user = jwtService.verifyToken(token);  // Токенди текшерүү
                 if (user != null) {
                     SecurityContextHolder.getContext().setAuthentication(
-                            new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities())
+                            new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities())  // Аутентификацияны орнотуу
                     );
                 }
-            }catch (JWTVerificationException exception){
-                throw new RuntimeException(exception);
+            } catch (JWTVerificationException exception) {
+                throw new RuntimeException(exception);  // Токен туура эмес болсо ката чыгаруу
             }
         }
-        filterChain.doFilter(request,response);
+        filterChain.doFilter(request, response);  // Фильтр аркылуу өтүү
     }
 }

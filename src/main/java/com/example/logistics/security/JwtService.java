@@ -17,10 +17,11 @@ import java.time.ZonedDateTime;
 public class JwtService {
 
     @Value("${security.secret.key}")
-    private String secretKey;
+    private String secretKey;  // Жүктөлгөн сыр сөз
 
-    private final UserRepository userRepository;
+    private final UserRepository userRepository;  // Жанакердин репозиториясы
 
+    // Токенди түзүү методун түзөбүз
     public String generateToken(User user) {
         ZonedDateTime now = ZonedDateTime.now();
         return JWT.create()
@@ -28,10 +29,11 @@ public class JwtService {
                 .withClaim("phoneNumber", user.getPhoneNumber())
                 .withClaim("role", user.getRole().name())
                 .withIssuedAt(now.toInstant())
-                .withExpiresAt(now.plusSeconds(100000000).toInstant())
+                .withExpiresAt(now.plusSeconds(100000000).toInstant()) // Токендин мөөнөтү
                 .sign(getAlgorithm());
     }
 
+    // Токенди текшерүү
     public User verifyToken(String token) {
         Algorithm algorithm = getAlgorithm();
         JWTVerifier verifier = JWT.require(algorithm).build();
@@ -42,6 +44,7 @@ public class JwtService {
         );
     }
 
+    // Алгоритмди түзүү
     public Algorithm getAlgorithm() {
         return Algorithm.HMAC256(secretKey);
     }
