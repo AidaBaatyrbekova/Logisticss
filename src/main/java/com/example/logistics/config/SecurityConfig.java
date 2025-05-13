@@ -26,6 +26,11 @@ public class SecurityConfig {
     private JwtFilter jwtFilter;
     private UserRepository userRepository;
 
+    public SecurityConfig(JwtFilter jwtFilter, UserRepository userRepository) {
+        this.jwtFilter = jwtFilter;
+        this.userRepository = userRepository;
+    }
+
     public  UserDetailsService userDetailsService (){
         return phoneNumber -> (UserDetails) userRepository.findUserByPhoneNumber(phoneNumber).orElseThrow(
                 () -> new UsernameNotFoundException("User not found")

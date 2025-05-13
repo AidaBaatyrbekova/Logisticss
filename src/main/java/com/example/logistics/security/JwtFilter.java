@@ -6,7 +6,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,29 +15,31 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
-@RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
-    private final JwtService jwtService;  // JwtService объектин инъекция кылуу
+    private final JwtService jwtService;
+    public  JwtFilter(JwtService jwtService) {
+        this.jwtService = jwtService;
+    }
 
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request,
                                     @NotNull HttpServletResponse response,
-                                    @NotNull FilterChain filterChain) throws ServletException, IOException {
-        String header = request.getHeader("Authorization");  // Authorization башталышындагы хедерди алуу
-        if (header != null && header.startsWith("Bearer ")) {  // Токен текшерүү
-            String token = header.substring(7);  // Токенди алып алуу (Bearer токен)
+                                    @NotNull FilterChain filterChain) throws ServletException, IOException, java.io.IOException {
+        String header = request.getHeader("Authorization");
+        if (header != null && header.startsWith("Bearer ")) {
+            String token = header.substring(7);
             try {
-                User user = jwtService.verifyToken(token);  // Токенди текшерүү
+                User user = jwtService.verifyToken(token);
                 if (user != null) {
                     SecurityContextHolder.getContext().setAuthentication(
-                            new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities())  // Аутентификацияны орнотуу
+                            new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities())
                     );
                 }
-            } catch (JWTVerificationException exception) {
-                throw new RuntimeException(exception);  // Токен туура эмес болсо ката чыгаруу
+            }catch (JWTVerificationException exception){
+                throw new RuntimeException(exception);
             }
         }
-        filterChain.doFilter(request, response);  // Фильтр аркылуу өтүү
+        filterChain.doFilter(request,response);
     }
 }

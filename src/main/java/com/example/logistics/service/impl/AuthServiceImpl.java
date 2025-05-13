@@ -1,4 +1,5 @@
 package com.example.logistics.service.impl;
+
 import com.example.logistics.dto.request.SignInRequest;
 import com.example.logistics.dto.request.SingUpRequest;
 import com.example.logistics.dto.response.AuthResponse;
@@ -21,6 +22,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+
     @Override
     public AuthResponse signUp(SingUpRequest userRequest) {
         if (userRepository.existsByPhoneNumber(userRequest.phoneNumber())) {
@@ -34,7 +36,6 @@ public class AuthServiceImpl implements AuthService {
         if (!userRequest.phoneNumber().startsWith("+996")) {
             throw new ValidationException("Phone number must start with +996");
         }
-
         User user = User.builder()
                 .name(userRequest.userName())
                 .lastName(userRequest.lastName())
@@ -50,7 +51,7 @@ public class AuthServiceImpl implements AuthService {
                 .role(user.getRole())
                 .token(token)
                 .build();
-}
+    }
 
     @Override
     public AuthResponse signIn(SignInRequest signInRequest) {

@@ -17,9 +17,9 @@ import java.time.ZonedDateTime;
 public class JwtService {
 
     @Value("${security.secret.key}")
-    private String secretKey;  // Жүктөлгөн сыр сөз
+    private String secretKey;
 
-    private final UserRepository userRepository;  // Жанакердин репозиториясы
+    private final UserRepository userRepository;
 
     // Токенди түзүү методун түзөбүз
     public String generateToken(User user) {
