@@ -1,7 +1,7 @@
 package com.example.logistics.controller;
 
 import com.example.logistics.dto.request.SignInRequest;
-import com.example.logistics.dto.request.SingUpRequest;
+import com.example.logistics.dto.request.SignUpRequest;
 import com.example.logistics.dto.response.AuthResponse;
 import com.example.logistics.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ public class AuthController {
 
     // 🟢 POST: Sign Up
     @PostMapping("/sign-up")
-    public ResponseEntity<AuthResponse> signUp(@RequestBody SingUpRequest request) {
+    public ResponseEntity<AuthResponse> signUp(@RequestBody SignUpRequest request) {
         AuthResponse response = authService.signUp(request);
         return ResponseEntity.ok(response);
     }

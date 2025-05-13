@@ -12,8 +12,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -77,7 +75,7 @@ public class UserServiceImpl implements UserService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String phoneNumber = authentication.getName();
 
-        User user = (User) userRepository.findUserByPhoneNumber(phoneNumber)
+        User user = userRepository.findUserByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
         userRepository.delete(user);
@@ -100,10 +98,5 @@ public class UserServiceImpl implements UserService {
                 .email(user.getEmail())
                 .status(HttpStatus.OK)
                 .build();
-    }
-
-    @Override
-    public List<User> getAllUsers() {
-        return userRepository.getAllUsers();
     }
 }

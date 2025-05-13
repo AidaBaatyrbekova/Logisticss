@@ -11,5 +11,4 @@ public interface UserService {
     UserResponse updateUser(UserRequest userRequest);
     UserResponse deleteUser(String userId);
     UserResponse getUser(String userId);
-    List<User> getAllUsers();
 }

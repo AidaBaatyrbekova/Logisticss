@@ -2,13 +2,10 @@ package com.example.logistics.controller;
 
 import com.example.logistics.dto.request.UserRequest;
 import com.example.logistics.dto.response.UserResponse;
-import com.example.logistics.entity.User;
 import com.example.logistics.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -43,12 +40,5 @@ public class UserController {
     public ResponseEntity<UserResponse> getUser(@PathVariable String userId) {
         UserResponse response = userService.getUser(userId);
         return new ResponseEntity<>(response, response.getStatus());
-    }
-
-    // Get all users (e.g. for admin)
-    @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
     }
 }

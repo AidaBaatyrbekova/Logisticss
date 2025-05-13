@@ -1,6 +1,7 @@
 package com.example.logistics.service.impl;
+
 import com.example.logistics.dto.request.SignInRequest;
-import com.example.logistics.dto.request.SingUpRequest;
+import com.example.logistics.dto.request.SignUpRequest;
 import com.example.logistics.dto.response.AuthResponse;
 import com.example.logistics.entity.Role;
 import com.example.logistics.entity.User;
@@ -21,10 +22,11 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+
     @Override
-    public AuthResponse signUp(SingUpRequest userRequest) {
+    public AuthResponse signUp(SignUpRequest userRequest) {
         if (userRepository.existsByPhoneNumber(userRequest.phoneNumber())) {
-            throw new AlreadyExistsException("Phone number already in use");
+            throw new AlreadyExistsException("Phone number already in user");
         }
 
         if (!userRequest.password().equals(userRequest.repeatPassword())) {
@@ -34,7 +36,6 @@ public class AuthServiceImpl implements AuthService {
         if (!userRequest.phoneNumber().startsWith("+996")) {
             throw new ValidationException("Phone number must start with +996");
         }
-
         User user = User.builder()
                 .name(userRequest.userName())
                 .lastName(userRequest.lastName())
@@ -50,7 +51,7 @@ public class AuthServiceImpl implements AuthService {
                 .role(user.getRole())
                 .token(token)
                 .build();
-}
+    }
 
     @Override
     public AuthResponse signIn(SignInRequest signInRequest) {

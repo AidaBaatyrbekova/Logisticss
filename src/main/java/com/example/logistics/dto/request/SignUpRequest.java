@@ -3,7 +3,7 @@ package com.example.logistics.dto.request;
 import lombok.Builder;
 
 @Builder
-public record SingUpRequest (
+public record SignUpRequest(
         String userName,
         String lastName,
         String phoneNumber,
