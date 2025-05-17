@@ -1,6 +1,4 @@
 package com.example.logistics.security;
-
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.example.logistics.entity.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

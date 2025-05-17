@@ -1,9 +1,8 @@
 package com.example.logistics.config;
-
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import com.example.logistics.repository.UserRepository;
 import com.example.logistics.security.JwtFilter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -11,8 +10,6 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,7 +23,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-    @Value("${security.secret.key}")
     private final JwtFilter jwtFilter;
     private final UserRepository userRepository;
 
@@ -41,9 +37,9 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/v3/api-docs/**").permitAll() // Ачык маршруткалар
-                        .requestMatchers("/api/users/**").hasRole("ADMIN") // Бул жерде ADMIN гана /api/users/** көрө алат
-                        .anyRequest().authenticated() // Калган маршруттарга токен талап кылынат
+                        .requestMatchers("/api/auth/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/api/users/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

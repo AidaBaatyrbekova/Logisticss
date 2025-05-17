@@ -6,6 +6,7 @@ import com.example.logistics.entity.User;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.example.logistics.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
@@ -13,7 +14,7 @@ import java.util.Date;
 
 @Service
 public class JwtService {
-
+    @Value("${security.secret.key}")
     private static final String SECRET_KEY = "yourSecretKey"; // Токен үчүн сырыңыз
     private final UserRepository userRepository;
 
