@@ -20,7 +20,6 @@ public class JwtService {
     public JwtService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-
     public String generateToken(User user) {
         ZonedDateTime now = ZonedDateTime.now();
         return JWT.create()
