@@ -15,5 +15,4 @@ public interface UserService {
     AuthResponse login(AuthRequest request);
 
     ResponseEntity<String> resetPassword(PasswordResetRequest request);
-
 }

@@ -5,7 +5,6 @@ import com.example.logistics.dto.request.SignUpRequest;
 import com.example.logistics.dto.response.AuthResponse;
 
 public interface AuthService {
-    AuthResponse signUp(SignUpRequest userRequest);
-    AuthResponse signIn(SignInRequest signInRequest);
-
+    AuthResponse signUp(SignUpRequest request);
+    AuthResponse signIn(SignInRequest request);
 }

@@ -9,5 +9,4 @@ public record SignUpRequest(
         String phoneNumber,
         String password,
         String repeatPassword
-){
-}
+) {}

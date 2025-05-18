@@ -19,53 +19,53 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
+
     private final UserRepository userRepository;
-    private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     @Override
-    public AuthResponse signUp(SignUpRequest userRequest) {
-        if (userRepository.existsByPhoneNumber(userRequest.phoneNumber())) {
-            throw new AlreadyExistsException("Phone number already in user");
+    public AuthResponse signUp(SignUpRequest request) {
+        if (userRepository.existsByPhoneNumber(request.phoneNumber())) {
+            throw new AlreadyExistsException("Phone number already in use");
         }
 
-        if (!userRequest.password().equals(userRequest.repeatPassword())) {
+        if (!request.password().equals(request.repeatPassword())) {
             throw new BadCredentialForbiddenException("Passwords do not match");
         }
 
-        if (!userRequest.phoneNumber().startsWith("+996")) {
+        if (!request.phoneNumber().startsWith("+996")) {
             throw new ValidationException("Phone number must start with +996");
         }
+
         User user = User.builder()
-                .name(userRequest.userName())
-                .lastName(userRequest.lastName())
-                .phoneNumber(userRequest.phoneNumber())
-                .password(passwordEncoder.encode(userRequest.password()))
+                .name(request.userName())
+                .lastName(request.lastName())
+                .phoneNumber(request.phoneNumber())
+                .password(passwordEncoder.encode(request.password()))
                 .role(Role.USER)
                 .build();
 
         userRepository.save(user);
-        String token = jwtService.generateToken(user);
 
         return AuthResponse.builder()
+                .token(jwtService.generateToken(user))
                 .role(user.getRole())
-                .token(token)
                 .build();
     }
 
     @Override
-    public AuthResponse signIn(SignInRequest signInRequest) {
-        User user = (User) userRepository.findUserByPhoneNumber(signInRequest.phoneNumber())
+    public AuthResponse signIn(SignInRequest request) {
+        User user = userRepository.findUserByPhoneNumber(request.phoneNumber())
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
-        if (!passwordEncoder.matches(signInRequest.password(), user.getPassword())) {
-            throw new BadCredentialForbiddenException("Password is incorrect");
+        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
+            throw new BadCredentialForbiddenException("Incorrect password");
         }
-        String token = jwtService.generateToken(user);
 
         return AuthResponse.builder()
+                .token(jwtService.generateToken(user))
                 .role(user.getRole())
-                .token(token)
                 .build();
     }
 }

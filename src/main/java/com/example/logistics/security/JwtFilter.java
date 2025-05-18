@@ -1,4 +1,5 @@
 package com.example.logistics.security;
+
 import com.example.logistics.entity.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -26,23 +27,20 @@ public class JwtFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         String header = request.getHeader("Authorization");
 
-        // Токенди текшерүү
         if (header != null && header.startsWith("Bearer ")) {
-            String token = header.substring(7); // "Bearer " деген сөздү алып салуу
+            String token = header.substring(7);
             try {
                 User user = jwtService.verifyToken(token);
                 if (user != null) {
-                    // Колдонуучу туура болсо, аны SecurityContextке кошобуз
                     SecurityContextHolder.getContext().setAuthentication(
                             new UsernamePasswordAuthenticationToken(user.getPhoneNumber(), null, user.getAuthorities())
                     );
                 }
             } catch (Exception exception) {
-                // Токен туура эмес болсо, 401 статус кодун кайтарып жиберебиз
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);  // Unauthorized if token invalid
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return;  // Токен туура эмес болсо, фильтр өткөрбөй кой
             }
         }
-        // Андан кийин, суранышты башка фильтрлерге өткөрөбүз
         filterChain.doFilter(request, response);
     }
 }

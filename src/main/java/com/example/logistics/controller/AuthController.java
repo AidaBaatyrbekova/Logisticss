@@ -15,17 +15,13 @@ public class AuthController {
 
     private final AuthService authService;
 
-    // 🟢 POST: Sign Up
     @PostMapping("/sign-up")
     public ResponseEntity<AuthResponse> signUp(@RequestBody SignUpRequest request) {
-        AuthResponse response = authService.signUp(request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(authService.signUp(request));
     }
 
-    // 🟢 POST: Sign In
     @PostMapping("/sign-in")
     public ResponseEntity<AuthResponse> signIn(@RequestBody SignInRequest request) {
-        AuthResponse response = authService.signIn(request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(authService.signIn(request));
     }
 }

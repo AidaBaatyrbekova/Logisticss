@@ -59,7 +59,6 @@ public class UserServiceImpl implements UserService {
         user.setEmail(userRequest.getEmail());
 
         userRepository.save(user);
-
         return UserResponse.builder()
                 .message("User updated successfully")
                 .status(HttpStatus.OK)
