@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -40,5 +42,20 @@ public class UserController {
     public ResponseEntity<UserResponse> getUser(@PathVariable String userId) {
         UserResponse response = userService.getUser(userId);
         return new ResponseEntity<>(response, response.getStatus());
+    }
+
+    // Жаңы: аты жана фамилиясы боюнча сорттолгон колдонуучулар
+
+    @GetMapping("/sorted-by-name")
+    public ResponseEntity<List<UserResponse>> getUsersSortedByName() {
+        List<UserResponse> users = userService.getUsersSortedByName();
+        return ResponseEntity.ok(users);
+    }
+
+    // Жаңы: ролу боюнча сорттолгон колдонуучулар
+    @GetMapping("/sorted-by-role")
+    public ResponseEntity<List<UserResponse>> getUsersSortedByRole() {
+        List<UserResponse> users = userService.getUsersSortedByRole();
+        return ResponseEntity.ok(users);
     }
 }

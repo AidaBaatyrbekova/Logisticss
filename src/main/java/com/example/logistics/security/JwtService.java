@@ -22,18 +22,18 @@ public class JwtService {
     public JwtService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-
     public String generateToken(User user) {
         ZonedDateTime now = ZonedDateTime.now();
-        return JWT.create()
+        String token = JWT.create()
                 .withClaim("id", user.getId())
                 .withClaim("phoneNumber", user.getPhoneNumber())
                 .withClaim("role", user.getRole().ordinal())
                 .withIssuedAt(Date.from(now.toInstant()))
                 .withExpiresAt(Date.from(now.plusSeconds(100000000).toInstant()))
                 .sign(Algorithm.HMAC256(secretKey));
+        System.out.println("Generated JWT token: " + token);
+        return token;
     }
-
     public User verifyToken(String token) {
         Algorithm algorithm = getAlgorithm();
         JWTVerifier verifier = JWT.require(algorithm).build();

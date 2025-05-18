@@ -33,12 +33,12 @@ public class JwtFilter extends OncePerRequestFilter {
                 User user = jwtService.verifyToken(token);
                 if (user != null) {
                     SecurityContextHolder.getContext().setAuthentication(
-                            new UsernamePasswordAuthenticationToken(user.getPhoneNumber(), null, user.getAuthorities())
+                            new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities())
                     );
                 }
             } catch (Exception exception) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return;  // Токен туура эмес болсо, фильтр өткөрбөй кой
+                return;
             }
         }
         filterChain.doFilter(request, response);

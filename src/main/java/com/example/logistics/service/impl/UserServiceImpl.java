@@ -1,6 +1,8 @@
 package com.example.logistics.service.impl;
+
 import com.example.logistics.dto.request.UserRequest;
 import com.example.logistics.dto.response.UserResponse;
+import com.example.logistics.entity.Role;
 import com.example.logistics.entity.User;
 import com.example.logistics.exception.NotFoundException;
 import com.example.logistics.repository.UserRepository;
@@ -12,6 +14,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -21,16 +26,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse saveUser(UserRequest request) {
+        if (!request.getPassword().equals(request.getRepeatPassword())) {
+            throw new RuntimeException("Passwords do not match");
+        }
         if (userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
             throw new RuntimeException("Phone number already exists");
         }
-
         User user = User.builder()
                 .name(request.getName())
                 .lastName(request.getLastName())
                 .phoneNumber(request.getPhoneNumber())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .role(request.getRole() == null ? Role.USER : request.getRole())
                 .build();
 
         userRepository.save(user);
@@ -50,7 +58,7 @@ public class UserServiceImpl implements UserService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String phoneNumber = authentication.getName();
 
-        User user = (User) userRepository.findUserByPhoneNumber(phoneNumber)
+        User user = userRepository.findUserByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
         user.setName(userRequest.getName());
@@ -73,10 +81,8 @@ public class UserServiceImpl implements UserService {
     public UserResponse deleteUser(String userId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String phoneNumber = authentication.getName();
-
         User user = userRepository.findUserByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-
         userRepository.delete(user);
 
         return UserResponse.builder()
@@ -90,6 +96,32 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(Long.parseLong(userId))
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
+        return UserResponse.builder()
+                .name(user.getName())
+                .lastName(user.getLastName())
+                .phoneNumber(user.getPhoneNumber())
+                .email(user.getEmail())
+                .status(HttpStatus.OK)
+                .build();
+    }
+
+    // сорттолгон колдонуучулар үчүн ---
+
+    public List<UserResponse> getUsersSortedByName() {
+        return userRepository.findAllByOrderByNameAscLastNameAsc()
+                .stream()
+                .map(this::mapToUserResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<UserResponse> getUsersSortedByRole() {
+        return userRepository.findAllByOrderByRoleAsc()
+                .stream()
+                .map(this::mapToUserResponse)
+                .collect(Collectors.toList());
+    }
+
+    private UserResponse mapToUserResponse(User user) {
         return UserResponse.builder()
                 .name(user.getName())
                 .lastName(user.getLastName())

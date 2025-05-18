@@ -4,6 +4,7 @@ import com.example.logistics.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -14,4 +15,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // Телефон номери мурунтан бар экенин текшерүү
     boolean existsByPhoneNumber(String phoneNumber);
+
+    // 1. Аты жана фамилия боюнча өспүрөт сорттоо
+    List<User> findAllByOrderByNameAscLastNameAsc();
+
+    // 2. Роль боюнча өспүрөт сорттоо
+    List<User> findAllByOrderByRoleAsc();
 }
