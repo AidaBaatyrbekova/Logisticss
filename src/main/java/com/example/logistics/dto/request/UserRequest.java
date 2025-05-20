@@ -21,20 +21,12 @@ public class UserRequest {
     @Size(min = 2, max = 30, message = "Name should be between 2 and 30 characters")
     String name;
 
-    @NotBlank(message = "LastName is mandatory!")
-    @Size(min = 2, max = 30, message = "LastName should be between 2 and 30 characters!")
-    String lastName;
-
     @Email(message = "Email should be valid")
     String email;
-
+    String lastName;
     @NotBlank(message = "Password is mandatory!")
     @Size(min = 8, max = 20, message = "Password must be between 8 and 20 characters!")
     String password;
-
-    @NotBlank(message = "Repeat password is mandatory!")
-    @Size(min = 8, max = 20, message = "Repeat password must be between 8 and 20 characters!")
-    String repeatPassword;
 
     @NotBlank(message = "Phone number should not be empty!")
     @Size(min = 6, max = 30, message = "Phone number must be between 6 and 30 characters!")

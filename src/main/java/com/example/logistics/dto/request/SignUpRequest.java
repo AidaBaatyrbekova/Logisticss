@@ -10,6 +10,7 @@ public record SignUpRequest(
         String phoneNumber,
         String password,
         String repeatPassword,
+        String  message,
         String email,
         Role role
 ) {

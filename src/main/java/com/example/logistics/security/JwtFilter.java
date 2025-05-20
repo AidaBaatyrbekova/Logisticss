@@ -25,22 +25,27 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+
         String header = request.getHeader("Authorization");
 
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
+
             try {
                 User user = jwtService.verifyToken(token);
+
                 if (user != null) {
+                    // SecurityContextHolderке Authentication коюп коёт
                     SecurityContextHolder.getContext().setAuthentication(
                             new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities())
                     );
                 }
-            } catch (Exception exception) {
+            } catch (Exception e) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
         }
+
         filterChain.doFilter(request, response);
     }
 }

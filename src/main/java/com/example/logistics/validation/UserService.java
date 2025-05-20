@@ -3,7 +3,6 @@ import com.example.logistics.dto.request.AuthRequest;
 import com.example.logistics.dto.request.UserRequest;
 import com.example.logistics.dto.response.AuthResponse;
 import com.example.logistics.dto.response.UserResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,5 +11,4 @@ public interface UserService {
 
     AuthResponse login(AuthRequest request);
 
-    ResponseEntity<String> resetPassword(AuthRequest request);
 }
