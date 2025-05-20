@@ -10,15 +10,14 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    // Телефон номери боюнча колдонуучуну издөө
     Optional<User> findUserByPhoneNumber(String phoneNumber);
 
-    // Телефон номери мурунтан бар экенин текшерүү
+
     boolean existsByPhoneNumber(String phoneNumber);
 
-    // 1. Аты жана фамилия боюнча өспүрөт сорттоо
-    List<User> findAllByOrderByNameAscLastNameAsc();
 
-    // 2. Роль боюнча өспүрөт сорттоо
+    List<User> findAllByOrderByNameAsc();
+
+
     List<User> findAllByOrderByRoleAsc();
 }

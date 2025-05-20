@@ -3,7 +3,6 @@ package com.example.logistics.service.impl;
 import com.example.logistics.dto.request.SignInRequest;
 import com.example.logistics.dto.request.SignUpRequest;
 import com.example.logistics.dto.response.AuthResponse;
-import com.example.logistics.entity.Role;
 import com.example.logistics.entity.User;
 import com.example.logistics.exception.AlreadyExistsException;
 import com.example.logistics.exception.BadCredentialForbiddenException;
@@ -29,32 +28,28 @@ public class AuthServiceImpl implements AuthService {
         if (userRepository.existsByPhoneNumber(request.phoneNumber())) {
             throw new AlreadyExistsException("Phone number already in use");
         }
-
-        if (!request.password().equals(request.repeatPassword())) {
-            throw new BadCredentialForbiddenException("Passwords do not match");
-        }
-
         if (!request.phoneNumber().startsWith("+996")) {
             throw new ValidationException("Phone number must start with +996");
         }
-
         User user = User.builder()
                 .name(request.name())
-                .lastName(request.lastName())
-                .phoneNumber(request.phoneNumber())
+                .message("User registered successfully")
                 .email(request.email())
-                .password(passwordEncoder.encode(request.password()))
-                .role(Role.USER)
+                .role(request.role())
                 .build();
 
         userRepository.save(user);
 
         return AuthResponse.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .phoneNumber(user.getPhoneNumber())
+                .message("User registered successfully")
+                .email(user.getEmail())
                 .token(jwtService.generateToken(user))
-                .role(user.getRole())
+                .role(request.role())
                 .build();
     }
-
     @Override
     public AuthResponse signIn(SignInRequest request) {
         User user = userRepository.findUserByPhoneNumber(request.phoneNumber())
@@ -63,8 +58,12 @@ public class AuthServiceImpl implements AuthService {
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new BadCredentialForbiddenException("Incorrect password");
         }
-
         return AuthResponse.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .phoneNumber(user.getPhoneNumber())
+                .message("User signed in successfully")
+                .email(user.getEmail())
                 .token(jwtService.generateToken(user))
                 .role(user.getRole())
                 .build();

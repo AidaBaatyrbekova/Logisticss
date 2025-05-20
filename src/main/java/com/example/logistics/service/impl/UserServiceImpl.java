@@ -26,15 +26,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse saveUser(UserRequest request) {
-        if (!request.getPassword().equals(request.getRepeatPassword())) {
-            throw new RuntimeException("Passwords do not match");
-        }
         if (userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
             throw new RuntimeException("Phone number already exists");
         }
         User user = User.builder()
                 .name(request.getName())
-                .lastName(request.getLastName())
                 .phoneNumber(request.getPhoneNumber())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -47,7 +43,6 @@ public class UserServiceImpl implements UserService {
                 .message("User saved successfully")
                 .status(HttpStatus.CREATED)
                 .name(user.getName())
-                .lastName(user.getLastName())
                 .phoneNumber(user.getPhoneNumber())
                 .email(user.getEmail())
                 .build();
@@ -62,7 +57,6 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
         user.setName(userRequest.getName());
-        user.setLastName(userRequest.getLastName());
         user.setPhoneNumber(userRequest.getPhoneNumber());
         user.setEmail(userRequest.getEmail());
 
@@ -71,7 +65,6 @@ public class UserServiceImpl implements UserService {
                 .message("User updated successfully")
                 .status(HttpStatus.OK)
                 .name(user.getName())
-                .lastName(user.getLastName())
                 .phoneNumber(user.getPhoneNumber())
                 .email(user.getEmail())
                 .build();
@@ -98,7 +91,6 @@ public class UserServiceImpl implements UserService {
 
         return UserResponse.builder()
                 .name(user.getName())
-                .lastName(user.getLastName())
                 .phoneNumber(user.getPhoneNumber())
                 .email(user.getEmail())
                 .status(HttpStatus.OK)
@@ -106,10 +98,9 @@ public class UserServiceImpl implements UserService {
     }
 
     // сорттолгон колдонуучулар үчүн ---
-
     public List<UserResponse> getUsersSortedByName() {
-        return userRepository.findAllByOrderByNameAscLastNameAsc()
-                .stream()
+        List<User> users = userRepository.findAllByOrderByNameAsc();
+        return users.stream()
                 .map(this::mapToUserResponse)
                 .collect(Collectors.toList());
     }
@@ -124,7 +115,6 @@ public class UserServiceImpl implements UserService {
     private UserResponse mapToUserResponse(User user) {
         return UserResponse.builder()
                 .name(user.getName())
-                .lastName(user.getLastName())
                 .phoneNumber(user.getPhoneNumber())
                 .email(user.getEmail())
                 .status(HttpStatus.OK)

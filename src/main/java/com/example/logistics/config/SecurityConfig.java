@@ -11,7 +11,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -28,35 +27,42 @@ public class SecurityConfig {
     private final JwtFilter jwtFilter;
     private final UserRepository userRepository;
 
+    // Колдонуучу табуу логикасы
     @Bean
     public UserDetailsService userDetailsService() {
-        return phoneNumber -> {
-            return (UserDetails) userRepository.findUserByPhoneNumber(phoneNumber)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        };
+        return phoneNumber -> userRepository.findUserByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
+
+    // Security chain (ким кайсы URLге кире алат)
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN") // ADMIN гана кире алат
+                        .requestMatchers("/api/auth/**", "/v3/api-docs/**").permitAll() // буларга баары кире алат
+                        .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN") // USER же ADMIN гана кире алат
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
+    // Пароль шифрлөөчү
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    // Аутентификация провайдер
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(passwordEncoder());
-        provider.setUserDetailsService(userDetailsService());
-        return provider;
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+
+        authenticationProvider.setPasswordEncoder(passwordEncoder());
+        authenticationProvider.setUserDetailsService(userDetailsService());
+
+        return authenticationProvider;
     }
 }

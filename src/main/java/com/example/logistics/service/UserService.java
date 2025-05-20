@@ -2,7 +2,6 @@ package com.example.logistics.service;
 
 import com.example.logistics.dto.request.UserRequest;
 import com.example.logistics.dto.response.UserResponse;
-import com.example.logistics.entity.User;
 
 import java.util.List;
 
