@@ -61,6 +61,7 @@ public class AuthServiceImpl implements AuthService {
         return AuthResponse.builder()
                 .id(user.getId())
                 .name(user.getName())
+                .lastName(user.getLastName())
                 .phoneNumber(user.getPhoneNumber())
                 .message("User signed in successfully")
                 .email(user.getEmail())
