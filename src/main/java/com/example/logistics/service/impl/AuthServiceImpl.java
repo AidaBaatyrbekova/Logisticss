@@ -33,6 +33,9 @@ public class AuthServiceImpl implements AuthService {
         }
         User user = User.builder()
                 .name(request.name())
+                .phoneNumber(request.phoneNumber())
+                .password(passwordEncoder.encode(request.password()))
+                .lastName(request.lastName())
                 .message("User registered successfully")
                 .email(request.email())
                 .role(request.role())
@@ -44,12 +47,14 @@ public class AuthServiceImpl implements AuthService {
                 .id(user.getId())
                 .name(user.getName())
                 .phoneNumber(user.getPhoneNumber())
+                .lastName(user.getLastName())
                 .message("User registered successfully")
                 .email(user.getEmail())
                 .token(jwtService.generateToken(user))
                 .role(request.role())
                 .build();
     }
+
     @Override
     public AuthResponse signIn(SignInRequest request) {
         User user = userRepository.findUserByPhoneNumber(request.phoneNumber())

@@ -35,7 +35,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 User user = jwtService.verifyToken(token);
 
                 if (user != null) {
-                    // SecurityContextHolderке Authentication коюп коёт
+
                     SecurityContextHolder.getContext().setAuthentication(
                             new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities())
                     );
@@ -45,7 +45,6 @@ public class JwtFilter extends OncePerRequestFilter {
                 return;
             }
         }
-
         filterChain.doFilter(request, response);
     }
 }

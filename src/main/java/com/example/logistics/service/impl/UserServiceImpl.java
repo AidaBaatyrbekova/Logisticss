@@ -20,8 +20,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-
-    private final UserRepository userRepository;
+private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Override
@@ -32,6 +31,7 @@ public class UserServiceImpl implements UserService {
         User user = User.builder()
                 .name(request.getName())
                 .phoneNumber(request.getPhoneNumber())
+                .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole() == null ? Role.USER : request.getRole())
@@ -43,6 +43,7 @@ public class UserServiceImpl implements UserService {
                 .message("User saved successfully")
                 .status(HttpStatus.CREATED)
                 .name(user.getName())
+                .lastName(user.getLastName())
                 .phoneNumber(user.getPhoneNumber())
                 .email(user.getEmail())
                 .build();
@@ -55,49 +56,51 @@ public class UserServiceImpl implements UserService {
 
         User user = userRepository.findUserByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-
         user.setName(userRequest.getName());
         user.setPhoneNumber(userRequest.getPhoneNumber());
         user.setEmail(userRequest.getEmail());
-
+        user.setLastName(userRequest.getLastName());
+        user.setRole(userRequest.getRole());
         userRepository.save(user);
         return UserResponse.builder()
                 .message("User updated successfully")
                 .status(HttpStatus.OK)
                 .name(user.getName())
+                .lastName(user.getLastName())
                 .phoneNumber(user.getPhoneNumber())
                 .email(user.getEmail())
                 .build();
     }
 
     @Override
-    public UserResponse deleteUser(String userId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String phoneNumber = authentication.getName();
-        User user = userRepository.findUserByPhoneNumber(phoneNumber)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+    public UserResponse deleteUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User with ID " + userId + " not found"));
+
         userRepository.delete(user);
 
         return UserResponse.builder()
                 .message("User deleted successfully")
                 .status(HttpStatus.OK)
                 .build();
-    }
 
+    }
     @Override
-    public UserResponse getUser(String userId) {
-        User user = userRepository.findById(Long.parseLong(userId))
-                .orElseThrow(() -> new NotFoundException("User not found"));
+    public UserResponse getUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User with ID " + userId + " not found"));
 
         return UserResponse.builder()
                 .name(user.getName())
+                .lastName(user.getLastName())
                 .phoneNumber(user.getPhoneNumber())
                 .email(user.getEmail())
                 .status(HttpStatus.OK)
+                .message("User retrieved successfully")
                 .build();
     }
 
-    // сорттолгон колдонуучулар үчүн ---
+    @Override
     public List<UserResponse> getUsersSortedByName() {
         List<User> users = userRepository.findAllByOrderByNameAsc();
         return users.stream()
@@ -105,6 +108,7 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public List<UserResponse> getUsersSortedByRole() {
         return userRepository.findAllByOrderByRoleAsc()
                 .stream()
@@ -115,6 +119,7 @@ public class UserServiceImpl implements UserService {
     private UserResponse mapToUserResponse(User user) {
         return UserResponse.builder()
                 .name(user.getName())
+                .lastName(user.getLastName())
                 .phoneNumber(user.getPhoneNumber())
                 .email(user.getEmail())
                 .status(HttpStatus.OK)

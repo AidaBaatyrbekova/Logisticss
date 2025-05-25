@@ -7,9 +7,8 @@ import com.example.logistics.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
+@Valid
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor

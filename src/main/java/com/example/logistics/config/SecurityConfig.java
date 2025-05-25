@@ -27,28 +27,24 @@ public class SecurityConfig {
     private final JwtFilter jwtFilter;
     private final UserRepository userRepository;
 
-    // Колдонуучу табуу логикасы
     @Bean
     public UserDetailsService userDetailsService() {
         return phoneNumber -> userRepository.findUserByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
-
-    // Security chain (ким кайсы URLге кире алат)
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/v3/api-docs/**").permitAll() // буларга баары кире алат
-                        .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN") // USER же ADMIN гана кире алат
+                        .requestMatchers("/api/users/register", "/api/auth/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-
     // Пароль шифрлөөчү
     @Bean
     public PasswordEncoder passwordEncoder() {
