@@ -26,16 +26,21 @@ public class JwtFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
+        String path = request.getRequestURI();
+
+        // Эгер токен талап кылынбаган маршрут болсо - токен текшербестен өткөрөбүз
+        if (path.startsWith("/api/otp") || path.startsWith("/api/auth") || path.equals("/api/users/register")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String header = request.getHeader("Authorization");
 
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
-
             try {
                 User user = jwtService.verifyToken(token);
-
                 if (user != null) {
-
                     SecurityContextHolder.getContext().setAuthentication(
                             new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities())
                     );
@@ -45,6 +50,8 @@ public class JwtFilter extends OncePerRequestFilter {
                 return;
             }
         }
+
+        // ✅ Эскертүү: Эгер токен жок болсо — жөн гана уланта берели (ошондо security rules иштейт)
         filterChain.doFilter(request, response);
     }
 }

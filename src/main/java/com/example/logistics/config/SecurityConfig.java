@@ -32,12 +32,13 @@ public class SecurityConfig {
         return phoneNumber -> userRepository.findUserByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/users/register", "/api/auth/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/api/users/register", "/api/auth/**", "/v3/api-docs/**", "/api/otp/**").permitAll()
                         .requestMatchers("/api/users/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()
                 )
@@ -45,13 +46,12 @@ public class SecurityConfig {
 
         return http.build();
     }
-    // Пароль шифрлөөчү
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // Аутентификация провайдер
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();

@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestControllerAdvice
 public class GlobalException {
+    // Таппаган учурда 404 кайтаруу
     @ExceptionHandler(ChangeSetPersister.NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ExceptionResponse notFoundException(ChangeSetPersister.NotFoundException e) {
@@ -21,7 +22,7 @@ public class GlobalException {
                 e.getClass().getSimpleName(),
                 e.getMessage());
     }
-
+    // Мурда эле бар болсо 409 кайтаруу
     @ExceptionHandler(AlreadyExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ExceptionResponse alreadyExistException(AlreadyExistsException e) {
@@ -30,7 +31,7 @@ public class GlobalException {
                 e.getClass().getSimpleName(),
                 e.getMessage());
     }
-
+    // Жарамсыз идентификация үчүн 403 кайтаруу
     @ExceptionHandler(BadCredentialException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ExceptionResponse badCredentialForbidden(BadCredentialException e) {
@@ -39,7 +40,7 @@ public class GlobalException {
                 e.getClass().getSimpleName(),
                 e.getMessage());
     }
-
+    // Жарамсыз авторизация үчүн 401 кайтаруу
     @ExceptionHandler(BadCredentialForbiddenException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ExceptionResponse badCredentialUnauthorized(BadCredentialForbiddenException e) {
@@ -48,7 +49,7 @@ public class GlobalException {
                 e.getClass().getSimpleName(),
                 e.getMessage());
     }
-
+    // Жарамсыз суроо (Request) үчүн 400 кайтаруу
     @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ExceptionResponse badRequest(BadRequestException e) {
@@ -57,7 +58,7 @@ public class GlobalException {
                 e.getClass().getSimpleName(),
                 e.getMessage());
     }
-
+    // Э-почта мурдадан ырасталган болсо 403 кайтаруу
     @ExceptionHandler(EmailAlreadyConfirmedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ExceptionResponse emailConfirmed(EmailAlreadyConfirmedException e) {
@@ -66,18 +67,16 @@ public class GlobalException {
                 e.getClass().getSimpleName(),
                 e.getMessage());
     }
-
+    // Валидациядагы каталарды 409 статус менен кайтаруу
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ExceptionResponse handleMethodArgumentNotValid(MethodArgumentNotValidException e) {
-        List<String> errors = e
-                .getBindingResult()
+        List<String> errors = e.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .toList();
-        return ExceptionResponse
-                .builder()
+        return ExceptionResponse.builder()
                 .httpStatus(HttpStatus.CONFLICT)
                 .exceptionClassName(e.getClass().getSimpleName())
                 .message(errors.toString())
