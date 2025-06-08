@@ -1,10 +1,12 @@
 package com.example.logistics.service;
 
-import com.example.logistics.dto.request.SignInRequest;
-import com.example.logistics.dto.request.SignUpRequest;
+import com.example.logistics.dto.request.SingInRequest;
+import com.example.logistics.dto.request.SingUpRequest;
 import com.example.logistics.dto.response.AuthResponse;
+import com.example.logistics.dto.response.SimpleResponse;
 
 public interface AuthService {
-    AuthResponse signUp(SignUpRequest request);
-    AuthResponse signIn(SignInRequest request);
+    SimpleResponse signUp(SingUpRequest userRequest);
+    AuthResponse signIn(SingInRequest signInRequest);
+    AuthResponse confirmSignUp(String code);
 }

@@ -1,57 +1,45 @@
 package com.example.logistics.security;
 
-import com.example.logistics.entity.User;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
 @Component
+@RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
 
-    public JwtFilter(JwtService jwtService) {
-        this.jwtService = jwtService;
-    }
-
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
-
-        String path = request.getRequestURI();
-
-        // Эгер токен талап кылынбаган маршрут болсо - токен текшербестен өткөрөбүз
-        if (path.startsWith("/api/otp") || path.startsWith("/api/auth") || path.equals("/api/users/register")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
+    protected void doFilterInternal(@NotNull HttpServletRequest request,
+                                    @NotNull HttpServletResponse response,
+                                    @NotNull FilterChain filterChain) throws ServletException, IOException, java.io.IOException {
         String header = request.getHeader("Authorization");
-
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
             try {
                 User user = jwtService.verifyToken(token);
                 if (user != null) {
                     SecurityContextHolder.getContext().setAuthentication(
-                            new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities())
+                            new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities())
                     );
                 }
-            } catch (Exception e) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return;
+            }catch (JWTVerificationException exception){
+                throw new RuntimeException(exception);
             }
         }
-
-        // ✅ Эскертүү: Эгер токен жок болсо — жөн гана уланта берели (ошондо security rules иштейт)
-        filterChain.doFilter(request, response);
+        filterChain.doFilter(request,response);
     }
 }

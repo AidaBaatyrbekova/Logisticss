@@ -1,14 +1,13 @@
 package com.example.logistics.controller;
 
-import com.example.logistics.dto.request.SignInRequest;
-import com.example.logistics.dto.request.SignUpRequest;
+import com.example.logistics.dto.request.SingInRequest;
+import com.example.logistics.dto.request.SingUpRequest;
 import com.example.logistics.dto.response.AuthResponse;
+import com.example.logistics.dto.response.SimpleResponse;
 import com.example.logistics.service.AuthService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-@Valid
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -16,13 +15,15 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/sign-up")
-    public ResponseEntity<AuthResponse> signUp(@Valid @RequestBody SignUpRequest request) {
-        return ResponseEntity.ok(authService.signUp(request));
+    @PostMapping("/signUp")
+    public SimpleResponse singUp(@RequestBody SingUpRequest userRequest) {
+        return authService.signUp(userRequest);
     }
-
-    @PostMapping("/sign-in")
-    public ResponseEntity<AuthResponse> signIn(@Valid @RequestBody SignInRequest request) {
-        return ResponseEntity.ok(authService.signIn(request));
+    @PostMapping("/signIn")
+    public AuthResponse signIn(@RequestBody SingInRequest userRequest) {
+        return authService.signIn(userRequest);
     }
+    @PostMapping("/verify")
+    public AuthResponse verify( @RequestParam String code){
+        return authService.confirmSignUp(code);}
 }

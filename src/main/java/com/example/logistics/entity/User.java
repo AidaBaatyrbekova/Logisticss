@@ -1,6 +1,5 @@
 package com.example.logistics.entity;
 
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,56 +9,65 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Table(name = "users")
-@Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 @Builder
+@Table(name = "users")
 public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
-    private String lastName;
-    private String password;
-    private String email;
-    private String message;
+    private String userName;
 
-    @Column(unique = true)
+    private String lastName;
+
     private String phoneNumber;
+
+    private String email;
+
+    private String password;
+
+    private String imageUrl;
+
+    private boolean verified;
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    // Эгер колдонуучуга рольду бересиң болсо, аны Authority катары кайтарсаң болот
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        // TODO: Эгер Role аркылуу GrantedAuthority түзүлсө, аны кайтаруу керек
+        return List.of(); // Азыр бош
     }
 
     @Override
     public String getUsername() {
-        return phoneNumber;
+        // Кириүү email аркылуу жүрүп жаткандыктан emailди кайтаруу керек
+        return email;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return true; // Колдонуучу эсеби токтотулбаган
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return true; // Колдонуучу кулпуланбаган
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return true; // Купуя сөзү эскирбеген
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return verified; // Эгер колдонуучу тастыкталган болсо гана активдүү
     }
 }
