@@ -13,4 +13,5 @@ public class TempUser {
     private String email;
     private String password;
     private String verificationCode;
+    private Role role;
 }

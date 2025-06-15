@@ -36,11 +36,11 @@ public class UserServiceImpl implements UserService {
                 () -> new NotFoundException("User not found")
         );
 
-        user.setUserName(userRequest.userName());
-        user.setLastName(userRequest.lastName());
-        user.setPhoneNumber(userRequest.phoneNumber());
-        user.setEmail(userRequest.email());
-        user.setImageUrl(userRequest.imageUrl());
+        user.setUserName(userRequest.getUserName());
+        user.setLastName(userRequest.getLastName());
+        user.setPhoneNumber(userRequest.getPhoneNumber());
+        user.setEmail(userRequest.getEmail());
+        user.setImageUrl(userRequest.getImageUrl());
 
         userRepository.save(user);
 

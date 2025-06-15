@@ -22,6 +22,8 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.example.logistics.entity.Role.ADMIN;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -49,6 +51,7 @@ public class AuthServiceImpl implements AuthService {
         tempUser.setEmail(userRequest.email());
         tempUser.setPassword(passwordEncoder.encode(userRequest.password()));
         tempUser.setVerificationCode(code);
+        tempUser.setRole(userRequest.role());
 
         tempUsersByCode.put(code, tempUser);
         emailService.sendVerificationCode(userRequest.email(), code);
@@ -90,7 +93,7 @@ public class AuthServiceImpl implements AuthService {
                 .lastName(tempUser.getLastName())
                 .email(tempUser.getEmail())
                 .password(tempUser.getPassword())
-                .role(Role.USER)
+                .role(Role.ADMIN)
                 .verified(true)
                 .build();
 

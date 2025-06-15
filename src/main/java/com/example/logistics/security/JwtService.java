@@ -40,7 +40,6 @@ public class JwtService {
                 () -> new RuntimeException("User not found with email: " + email)
         );
     }
-
     public Algorithm getAlgorithm(){
         return Algorithm.HMAC256(secretKey);
     }
